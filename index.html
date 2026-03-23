@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head><title>n8n_social — Legal</title></head>
+<body>
+<h1>n8n_social</h1>
+
+<h2>Terms of Service</h2>
+<p>Last updated: March 2025</p>
+<p>n8n_social is a private automation tool operated solely by its owner.
+It is used exclusively to schedule and publish content to a single TikTok 
+account owned by the operator. It is not available to the public and does 
+not serve any third-party users. No data is collected from any user.</p>
+
+<h2>Privacy Policy</h2>
+<p>Last updated: March 2025</p>
+<p>This application does not collect, store, share or sell any personal data 
+from any user. It only accesses the TikTok account of its own operator for 
+the sole purpose of publishing content. No TikTok user data is stored or 
+transmitted to any third party. This application does not use cookies.</p>
+
+<p>For questions contact the application owner directly.</p>
+</body>
+</html>
+```
+
+9. Click **Commit new file**
+10. Now go to repository **Settings** → **Pages** (left sidebar)
+11. Under **Source** select **Deploy from a branch**
+12. Select branch **main**, folder **/ (root)**
+13. Click **Save**
+14. Wait 2 minutes then your URL will be:
+```
+https://YOUR_GITHUB_USERNAME.github.io/tiktok-legal/
+```
+
+This single URL covers both Terms of Service and Privacy Policy since they are both on the same page. Use this same URL for both fields in TikTok.
+
+---
+
+**Problem 2 — Redirect URI "Enter a valid URL beginning with https://"**
+
+TikTok's redirect URI field in the app settings does **not** accept `https://localhost` — it requires a real domain with a valid HTTPS certificate even though `localhost` is standard in OAuth development.
+
+The fix is to use a real callback URL. The easiest free option is **n8n's webhook URL**.
+
+In your n8n instance create a Webhook node:
+
+1. Add a **Webhook** node to a new workflow
+2. Set HTTP Method to `GET`
+3. Set Path to `tiktok-callback`
+4. Copy the **Test URL** — it looks like:
+```
+https://YOUR-N8N-INSTANCE.app.n8n.cloud/webhook-test/tiktok-callback
+```
+
+Use this as your redirect URI in TikTok. Then your OAuth URL becomes:
+```
+https://www.tiktok.com/v2/auth/authorize/?client_key=sbawltxht1z6cq3po8&response_type=code&scope=user.info.basic,video.publish,video.upload&redirect_uri=https://YOUR-N8N-INSTANCE.app.n8n.cloud/webhook-test/tiktok-callback&state=n8nsocial123
